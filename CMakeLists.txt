@@ -22,7 +22,7 @@ find_package(Qt6 REQUIRED COMPONENTS
     SerialBus
 )
 
-qt_add_executable(${PROJECT_NAME}
+qt_add_executable(InstrumentClusterApp
     src/main.cpp
 
     src/can/CanReceiver.cpp
@@ -39,7 +39,7 @@ qt_add_executable(${PROJECT_NAME}
     src/logic/DashboardController.h
 )
 
-qt_add_qml_module(${PROJECT_NAME}
+qt_add_qml_module(InstrumentClusterApp
     URI InstrumentCluster
     VERSION 1.0
 
@@ -51,7 +51,7 @@ qt_add_qml_module(${PROJECT_NAME}
         qml/Indicator.qml
 )
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(InstrumentClusterApp
     PRIVATE
         Qt6::Core
         Qt6::Gui
@@ -61,7 +61,7 @@ target_link_libraries(${PROJECT_NAME}
         Qt6::SerialBus
 )
 
-target_include_directories(${PROJECT_NAME}
+target_include_directories(InstrumentClusterApp
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
