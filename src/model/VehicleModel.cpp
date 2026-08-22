@@ -59,52 +59,41 @@ bool VehicleModel::canConnected() const
 
 bool VehicleModel::lowFuel() const
 {
-    return m_data.fuel < 10;
+    return m_data.canConnected &&
+           m_data.fuel < 10;
 }
 
 bool VehicleModel::highTemperature() const
 {
-    return m_data.coolantTemperature > 105;
+    return m_data.canConnected &&
+           m_data.coolantTemperature > 105;
 }
 
-void VehicleModel::setData(const VehicleData &data)
+
+void VehicleModel::updateDriveData(
+    double speed,
+    std::uint16_t rpm,
+    bool ignition)
 {
     const bool speedChangedValue =
-        !qFuzzyCompare(m_data.speed + 1.0,
-                       data.speed + 1.0);
+        !qFuzzyCompare(
+            m_data.speed + 1.0,
+            speed + 1.0
+            );
 
     const bool rpmChangedValue =
-        m_data.rpm != data.rpm;
-
-    const bool coolantChangedValue =
-        m_data.coolantTemperature !=
-        data.coolantTemperature;
-
-    const bool fuelChangedValue =
-        m_data.fuel != data.fuel;
+        m_data.rpm != rpm;
 
     const bool ignitionChangedValue =
-        m_data.ignition != data.ignition;
-
-    const bool leftChangedValue =
-        m_data.leftTurn != data.leftTurn;
-
-    const bool rightChangedValue =
-        m_data.rightTurn != data.rightTurn;
-
-    const bool highBeamChangedValue =
-        m_data.highBeam != data.highBeam;
-
-    const bool checkEngineChangedValue =
-        m_data.checkEngine != data.checkEngine;
+        m_data.ignition != ignition;
 
     const bool canChangedValue =
-        m_data.canConnected != data.canConnected;
+        !m_data.canConnected;
 
-    const bool oldLowFuel = lowFuel();
-    const bool oldHighTemp = highTemperature();
-
-    m_data = data;
+    m_data.speed = speed;
+    m_data.rpm = rpm;
+    m_data.ignition = ignition;
+    m_data.canConnected = true;
 
     if (speedChangedValue)
         emit speedChanged();
@@ -112,14 +101,75 @@ void VehicleModel::setData(const VehicleData &data)
     if (rpmChangedValue)
         emit rpmChanged();
 
+    if (ignitionChangedValue)
+        emit ignitionChanged();
+
+    if (canChangedValue)
+        emit canConnectedChanged();
+}
+
+
+void VehicleModel::updateStatusData(
+    std::uint8_t coolantTemperature,
+    std::uint8_t fuel,
+    bool leftTurn,
+    bool rightTurn,
+    bool highBeam,
+    bool checkEngine)
+{
+    const bool coolantChangedValue =
+        m_data.coolantTemperature !=
+        coolantTemperature;
+
+    const bool fuelChangedValue =
+        m_data.fuel != fuel;
+
+    const bool leftChangedValue =
+        m_data.leftTurn != leftTurn;
+
+    const bool rightChangedValue =
+        m_data.rightTurn != rightTurn;
+
+    const bool highBeamChangedValue =
+        m_data.highBeam != highBeam;
+
+    const bool checkEngineChangedValue =
+        m_data.checkEngine != checkEngine;
+
+    const bool canChangedValue =
+        !m_data.canConnected;
+
+    const bool oldLowFuel =
+        lowFuel();
+
+    const bool oldHighTemperature =
+        highTemperature();
+
+    m_data.coolantTemperature =
+        coolantTemperature;
+
+    m_data.fuel =
+        fuel;
+
+    m_data.leftTurn =
+        leftTurn;
+
+    m_data.rightTurn =
+        rightTurn;
+
+    m_data.highBeam =
+        highBeam;
+
+    m_data.checkEngine =
+        checkEngine;
+
+    m_data.canConnected = true;
+
     if (coolantChangedValue)
         emit coolantTemperatureChanged();
 
     if (fuelChangedValue)
         emit fuelChanged();
-
-    if (ignitionChangedValue)
-        emit ignitionChanged();
 
     if (leftChangedValue)
         emit leftTurnChanged();
@@ -137,28 +187,91 @@ void VehicleModel::setData(const VehicleData &data)
         emit canConnectedChanged();
 
     if (oldLowFuel != lowFuel() ||
-        oldHighTemp != highTemperature())
+        oldHighTemperature != highTemperature())
     {
         emit warningsChanged();
     }
 }
 
+
 void VehicleModel::setCanLost()
 {
-    VehicleData data = m_data;
+    const bool speedChangedValue =
+        !qFuzzyIsNull(m_data.speed);
 
-    data.speed = 0.0;
-    data.rpm = 0;
+    const bool rpmChangedValue =
+        m_data.rpm != 0;
 
-    data.coolantTemperature = 0;
-    data.fuel = 0;
+    const bool coolantChangedValue =
+        m_data.coolantTemperature != 0;
 
-    data.leftTurn = false;
-    data.rightTurn = false;
-    data.highBeam = false;
-    data.checkEngine = false;
+    const bool fuelChangedValue =
+        m_data.fuel != 0;
 
-    data.canConnected = false;
+    const bool leftChangedValue =
+        m_data.leftTurn;
 
-    setData(data);
+    const bool rightChangedValue =
+        m_data.rightTurn;
+
+    const bool highBeamChangedValue =
+        m_data.highBeam;
+
+    const bool checkEngineChangedValue =
+        m_data.checkEngine;
+
+    const bool wasConnected =
+        m_data.canConnected;
+
+    const bool oldLowFuel =
+        lowFuel();
+
+    const bool oldHighTemperature =
+        highTemperature();
+
+    m_data.speed = 0.0;
+    m_data.rpm = 0;
+
+    m_data.coolantTemperature = 0;
+    m_data.fuel = 0;
+
+    m_data.leftTurn = false;
+    m_data.rightTurn = false;
+    m_data.highBeam = false;
+    m_data.checkEngine = false;
+
+    m_data.canConnected = false;
+
+    if (speedChangedValue)
+        emit speedChanged();
+
+    if (rpmChangedValue)
+        emit rpmChanged();
+
+    if (coolantChangedValue)
+        emit coolantTemperatureChanged();
+
+    if (fuelChangedValue)
+        emit fuelChanged();
+
+    if (leftChangedValue)
+        emit leftTurnChanged();
+
+    if (rightChangedValue)
+        emit rightTurnChanged();
+
+    if (highBeamChangedValue)
+        emit highBeamChanged();
+
+    if (checkEngineChangedValue)
+        emit checkEngineChanged();
+
+    if (wasConnected)
+        emit canConnectedChanged();
+
+    if (oldLowFuel != lowFuel() ||
+        oldHighTemperature != highTemperature())
+    {
+        emit warningsChanged();
+    }
 }

@@ -78,7 +78,10 @@ public:
     bool lowFuel() const;
     bool highTemperature() const;
 
-    void setData(const VehicleData &data);
+    void updateDriveData( double speed, std::uint16_t rpm,bool ignition);
+
+    void updateStatusData( std::uint8_t coolantTemperature, std::uint8_t fuel,bool leftTurn, bool rightTurn, bool highBeam,  bool checkEngine);
+
     void setCanLost();
 
 signals:

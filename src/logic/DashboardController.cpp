@@ -45,13 +45,35 @@ void DashboardController::processFrame(
     if (!m_parser.parse(frame, data))
         return;
 
-    if (frame.frameId() == 0x100)
+    switch (frame.frameId())
     {
+    case 0x100:
         m_lastCan100.restart();
         m_receivedCan100 = true;
-    }
 
-    m_model->setData(data);
+        m_model->updateDriveData(
+            data.speed,
+            data.rpm,
+            data.ignition
+            );
+
+        break;
+
+    case 0x101:
+        m_model->updateStatusData(
+            data.coolantTemperature,
+            data.fuel,
+            data.leftTurn,
+            data.rightTurn,
+            data.highBeam,
+            data.checkEngine
+            );
+
+        break;
+
+    default:
+        break;
+    }
 }
 
 void DashboardController::checkCanTimeout()
