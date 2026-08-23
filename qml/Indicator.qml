@@ -5,13 +5,14 @@ Item {
 
     property string text: ""
     property bool active: false
+    property bool blink: true  // управляет миганием
     property color color: "white"
 
     width: 100
     height: 30
 
     opacity: active
-             ? (blinkTimer.blinkState ? 1.0 : 0.25)
+             ? (blink ? (blinkTimer.blinkState ? 1.0 : 0.25) : 1.0)
              : 0.25
 
     Timer {
@@ -21,7 +22,7 @@ Item {
 
         interval: 500
         repeat: true
-        running: root.active
+        running: root.active && root.blink
 
         onTriggered: {
             blinkState = !blinkState
@@ -35,11 +36,8 @@ Item {
 
     Text {
         anchors.centerIn: parent
-
         text: root.text
-
         color: root.color
-
         font.pixelSize: 18
         font.bold: true
     }
