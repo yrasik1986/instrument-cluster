@@ -2,73 +2,44 @@
 
 #include <QDebug>
 
-DashboardController::DashboardController(
-    CanReceiver *receiver,
-    VehicleModel *model,
-    QObject *parent)
+DashboardController::DashboardController(CanReceiver *receiver, VehicleModel *model, QObject *parent)
     : QObject(parent)
     , m_receiver(receiver)
     , m_model(model)
 {
-    connect(
-        m_receiver,
-        &CanReceiver::frameReceived,
-        this,
-        &DashboardController::processFrame
-        );
+    connect(m_receiver,&CanReceiver::frameReceived,this,&DashboardController::processFrame);
 
-    connect(
-        &m_timeoutTimer,
-        &QTimer::timeout,
-        this,
-        &DashboardController::checkCanTimeout
-        );
+    connect(&m_timeoutTimer,&QTimer::timeout, this, &DashboardController::checkCanTimeout);
 
     m_timeoutTimer.setInterval(100);
 }
 
-bool DashboardController::start(
-    const QString &interfaceName)
+bool DashboardController::start(const QString &interfaceName)
 {
     m_timeoutTimer.start();
 
-    return m_receiver->connectToInterface(
-        interfaceName
-        );
+    return m_receiver->connectToInterface(interfaceName);
 }
 
-void DashboardController::processFrame(
-    const QCanBusFrame &frame)
+void DashboardController::processFrame(const QCanBusFrame &frame)
 {
     VehicleData data;
 
     if (!m_parser.parse(frame, data))
+    {
         return;
+    }
 
     switch (frame.frameId())
     {
     case 0x100:
         m_lastCan100.restart();
         m_receivedCan100 = true;
-
-        m_model->updateDriveData(
-            data.speed,
-            data.rpm,
-            data.ignition
-            );
-
+        m_model->updateDriveData(data.speed, data.rpm,data.ignition);
         break;
 
     case 0x101:
-        m_model->updateStatusData(
-            data.coolantTemperature,
-            data.fuel,
-            data.leftTurn,
-            data.rightTurn,
-            data.highBeam,
-            data.checkEngine
-            );
-
+        m_model->updateStatusData(data.coolantTemperature, data.fuel,data.leftTurn,data.rightTurn, data.highBeam, data.checkEngine );
         break;
 
     default:

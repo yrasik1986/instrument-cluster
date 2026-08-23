@@ -8,53 +8,29 @@ class VehicleModel : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(double speed
-                   READ speed
-                       NOTIFY speedChanged)
+    Q_PROPERTY(double speed READ speed NOTIFY speedChanged)
 
-    Q_PROPERTY(int rpm
-                   READ rpm
-                       NOTIFY rpmChanged)
+    Q_PROPERTY(int rpm READ rpm NOTIFY rpmChanged)
 
-    Q_PROPERTY(int coolantTemperature
-                   READ coolantTemperature
-                       NOTIFY coolantTemperatureChanged)
+    Q_PROPERTY(int coolantTemperature READ coolantTemperature NOTIFY coolantTemperatureChanged)
 
-    Q_PROPERTY(int fuel
-                   READ fuel
-                       NOTIFY fuelChanged)
+    Q_PROPERTY(int fuel READ fuel NOTIFY fuelChanged)
 
-    Q_PROPERTY(bool ignition
-                   READ ignition
-                       NOTIFY ignitionChanged)
+    Q_PROPERTY(bool ignition READ ignition NOTIFY ignitionChanged)
 
-    Q_PROPERTY(bool leftTurn
-                   READ leftTurn
-                       NOTIFY leftTurnChanged)
+    Q_PROPERTY(bool leftTurn READ leftTurn NOTIFY leftTurnChanged)
 
-    Q_PROPERTY(bool rightTurn
-                   READ rightTurn
-                       NOTIFY rightTurnChanged)
+    Q_PROPERTY(bool rightTurn READ rightTurn NOTIFY rightTurnChanged)
 
-    Q_PROPERTY(bool highBeam
-                   READ highBeam
-                       NOTIFY highBeamChanged)
+    Q_PROPERTY(bool highBeam READ highBeam NOTIFY highBeamChanged)
 
-    Q_PROPERTY(bool checkEngine
-                   READ checkEngine
-                       NOTIFY checkEngineChanged)
+    Q_PROPERTY(bool checkEngine READ checkEngine NOTIFY checkEngineChanged)
 
-    Q_PROPERTY(bool canConnected
-                   READ canConnected
-                       NOTIFY canConnectedChanged)
+    Q_PROPERTY(bool canConnected READ canConnected NOTIFY canConnectedChanged)
 
-    Q_PROPERTY(bool lowFuel
-                   READ lowFuel
-                       NOTIFY warningsChanged)
+    Q_PROPERTY(bool lowFuel READ lowFuel NOTIFY warningsChanged)
 
-    Q_PROPERTY(bool highTemperature
-                   READ highTemperature
-                       NOTIFY warningsChanged)
+    Q_PROPERTY(bool highTemperature READ highTemperature NOTIFY warningsChanged)
 
 public:
     explicit VehicleModel(QObject *parent = nullptr);

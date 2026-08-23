@@ -13,8 +13,5 @@ private:
     bool parse100(const QByteArray &payload, VehicleData &data);
     bool parse101(const QByteArray &payload, VehicleData &data);
 
-    static std::uint16_t readUInt16LE(
-        const QByteArray &data,
-        int offset
-        );
+    static std::uint16_t readUInt16LE(const QByteArray &data,int offset);
 };

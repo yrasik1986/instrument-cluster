@@ -13,6 +13,10 @@ Item {
     readonly property real gaugeRadius:
         Math.min(width, height) * 0.39
 
+    // =========================
+    // Шкала
+    // =========================
+
     Canvas {
         id: canvas
 
@@ -36,10 +40,7 @@ Item {
                 (root.endAngle - 90) *
                 Math.PI / 180
 
-            // =========================
             // Основная дуга
-            // =========================
-
             ctx.beginPath()
 
             ctx.arc(
@@ -54,10 +55,7 @@ Item {
             ctx.strokeStyle = "#252a31"
             ctx.stroke()
 
-            // =========================
             // Риски
-            // =========================
-
             var tickCount = 16
 
             for (var i = 0; i <= tickCount; ++i) {
@@ -105,10 +103,10 @@ Item {
         }
     }
 
-    // =================================
+    // =========================
     // Цифры 0...8
     // 1 = 1000 RPM
-    // =================================
+    // =========================
 
     Repeater {
         model: 9
@@ -162,11 +160,13 @@ Item {
         }
     }
 
-    // =================================
+    // =========================
     // Стрелка
-    // =================================
+    // =========================
 
     Item {
+        id: needle
+
         width: root.width
         height: root.height
 
@@ -191,9 +191,10 @@ Item {
             }
         }
 
+        // Только верхняя половина стрелки.
         Rectangle {
             width: 5
-            height: root.height * 0.34
+            height: root.height * 0.22
 
             radius: 2
 
@@ -202,13 +203,14 @@ Item {
             anchors.horizontalCenter:
                 parent.horizontalCenter
 
-            anchors.verticalCenter:
+            anchors.bottom:
                 parent.verticalCenter
 
-            anchors.verticalCenterOffset:
-                -root.height * 0.17
+            anchors.bottomMargin:
+                root.height * 0.02
         }
 
+        // Центральная втулка
         Rectangle {
             width: 18
             height: 18
@@ -221,15 +223,21 @@ Item {
         }
     }
 
-    // =================================
-    // Цифровое значение RPM
-    // =================================
+    // =========================
+    // Цифровые обороты
+    // =========================
 
     Text {
+        id: valueText
+
         anchors.horizontalCenter:
             parent.horizontalCenter
 
-        y: height * 0.64
+        anchors.verticalCenter:
+            parent.verticalCenter
+
+        anchors.verticalCenterOffset:
+            root.height * 0.13
 
         text: Math.round(root.value)
 
@@ -237,22 +245,34 @@ Item {
 
         font.pixelSize: 38
         font.bold: true
+
+        horizontalAlignment:
+            Text.AlignHCenter
+
+        verticalAlignment:
+            Text.AlignVCenter
     }
 
-    // =================================
+    // =========================
     // RPM
-    // =================================
+    // =========================
 
     Text {
         anchors.horizontalCenter:
             parent.horizontalCenter
 
-        y: height * 0.76
+        anchors.top:
+            valueText.bottom
+
+        anchors.topMargin: 4
 
         text: root.title
 
         color: "#808894"
 
         font.pixelSize: 16
+
+        horizontalAlignment:
+            Text.AlignHCenter
     }
 }

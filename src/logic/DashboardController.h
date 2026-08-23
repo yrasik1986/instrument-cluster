@@ -13,11 +13,7 @@ class DashboardController : public QObject
     Q_OBJECT
 
 public:
-    explicit DashboardController(
-        CanReceiver *receiver,
-        VehicleModel *model,
-        QObject *parent = nullptr
-        );
+    explicit DashboardController(CanReceiver *receiver,VehicleModel *model, QObject *parent = nullptr);
 
     bool start(const QString &interfaceName);
 

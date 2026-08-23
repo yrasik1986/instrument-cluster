@@ -19,44 +19,25 @@ public:
     {
         QString errorString;
 
-        m_device =
-            QCanBus::instance()->createDevice(
-                QStringLiteral("socketcan"),
-                QStringLiteral("vcan0"),
-                &errorString
-                );
+        m_device =  QCanBus::instance()->createDevice(QStringLiteral("socketcan"), QStringLiteral("vcan0"), &errorString);
 
         if (!m_device)
         {
-            std::cerr
-                << "CAN device error: "
-                << errorString.toStdString()
-                << '\n';
-
+            std::cerr << "CAN device error: "<< errorString.toStdString() << '\n';
             return;
         }
 
         if (!m_device->connectDevice())
         {
-            std::cerr
-                << "CAN connection error: "
-                << m_device->errorString().toStdString()
-                << '\n';
-
+            std::cerr << "CAN connection error: " << m_device->errorString().toStdString() << '\n';
             return;
         }
 
-        connect(
-            &m_timer,
-            &QTimer::timeout,
-            this,
-            &CanGenerator::sendData
-            );
+        connect( &m_timer, &QTimer::timeout,this, &CanGenerator::sendData);
 
         m_timer.start(20);
 
-        std::cout
-            << "CAN generator started\n";
+        std::cout   << "CAN generator started\n";
     }
 
 private slots:
@@ -65,108 +46,54 @@ private slots:
     {
         m_time += 0.02;
 
-        const double wave =
-            (std::sin(m_time * 0.4) + 1.0) / 2.0;
+        const double wave =  (std::sin(m_time * 0.4) + 1.0) / 2.0;
 
-        const double speed =
-            wave * 160.0;
+        const double speed = wave * 160.0;
 
-        const int rpm =
-            static_cast<int>(
-                1000.0 +
-                wave * 5000.0
-                );
+        const int rpm =  static_cast<int>(1000.0 + wave * 5000.0);
 
-        const int fuel =
-            50 +
-            static_cast<int>(
-                40.0 *
-                std::sin(m_time * 0.05)
-                );
+        const int fuel = 50 + static_cast<int>(40.0 * std::sin(m_time * 0.05));
 
-        const int coolant =
-            85 +
-            static_cast<int>(
-                30.0 *
-                wave
-                );
+        const int coolant =  85 + static_cast<int>(30.0 * wave);
 
-        send100(
-            speed,
-            rpm,
-            true
-            );
+        send100(speed, rpm, true);
 
-        send101(
-            coolant,
-            fuel
-            );
+        send101(coolant,fuel);
     }
 
 private:
 
-    void send100(
-        double speed,
-        int rpm,
-        bool ignition)
+    void send100(double speed,int rpm, bool ignition)
     {
-        const int rawSpeed =
-            static_cast<int>(
-                speed * 100.0
-                );
+        const int rawSpeed = static_cast<int>(speed * 100.0);
 
         QByteArray data(8, 0);
 
-        data[0] =
-            static_cast<char>(
-                rawSpeed & 0xFF
-                );
+        data[0] = static_cast<char>(rawSpeed & 0xFF);
 
-        data[1] =
-            static_cast<char>(
-                (rawSpeed >> 8) & 0xFF
-                );
+        data[1] = static_cast<char>((rawSpeed >> 8) & 0xFF);
 
-        data[2] =
-            static_cast<char>(
-                rpm & 0xFF
-                );
+        data[2] = static_cast<char>(rpm & 0xFF);
 
-        data[3] =
-            static_cast<char>(
-                (rpm >> 8) & 0xFF
-                );
+        data[3] = static_cast<char>((rpm >> 8) & 0xFF);
 
-        data[4] =
-            ignition ? 1 : 0;
+        data[4] = ignition ? 1 : 0;
 
-        QCanBusFrame frame(
-            0x100,
-            data
-            );
+        QCanBusFrame frame(0x100, data);
 
         if (!m_device->writeFrame(frame))
         {
-            std::cerr
-                << "Failed to send 0x100\n";
+            std::cerr << "Failed to send 0x100\n";
         }
     }
 
-    void send101(
-        int coolant,
-        int fuel)
+    void send101( int coolant,int fuel)
     {
         QByteArray data(8, 0);
 
-        data[0] =
-            static_cast<char>(
-                std::clamp(coolant, 0, 150)
-                );
+        data[0] = static_cast<char>(std::clamp(coolant, 0, 150));
 
-        data[1] =
-            static_cast<char>(
-                std::clamp(fuel, 0, 100)
-                );
+        data[1] = static_cast<char>(std::clamp(fuel, 0, 100));
 
         std::uint8_t status = 0;
 
@@ -198,20 +125,17 @@ private:
          * Check Engine
          */
         if (coolant > 108)
+        {
             status |= (1 << 3);
+        }
 
-        data[2] =
-            static_cast<char>(status);
+        data[2] = static_cast<char>(status);
 
-        QCanBusFrame frame(
-            0x101,
-            data
-            );
+        QCanBusFrame frame(0x101,data);
 
         if (!m_device->writeFrame(frame))
         {
-            std::cerr
-                << "Failed to send 0x101\n";
+            std::cerr << "Failed to send 0x101\n";
         }
     }
 
