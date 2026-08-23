@@ -57,13 +57,22 @@ Create virtual CAN:
 
 Build:
 
-    cmake -S . -B build -G Ninja
+# Create build directory
+mkdir -p build && cd build
 
-    cmake --build build
+# Configure with CMake
+cmake -DCMAKE_PREFIX_PATH=/opt/Qt/6.11.2/gcc_64 ..
+
+# Build using all cores
+make -j$(nproc)
 
 Run:
 
-    ./build/InstrumentCluster
+# Terminal 1: Start the CAN generator
+./build/tools/can_generator/can_generator
+
+# Terminal 2: Launch the dashboard
+./build/InstrumentCluster
 
 ## CAN interface
 
