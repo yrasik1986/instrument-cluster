@@ -184,13 +184,6 @@ Item {
 
         transformOrigin: Item.Center
 
-        Behavior on rotation {
-            NumberAnimation {
-                duration: 80
-                easing.type: Easing.OutQuad
-            }
-        }
-
         // Только верхняя половина стрелки.
         Rectangle {
             width: 5

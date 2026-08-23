@@ -57,7 +57,7 @@ Item {
         height: 410
 
         value: vehicle.ignition
-               ? vehicle.speed
+               ? vehicle.animatedSpeed
                : 0
 
         maximum: 220
@@ -77,7 +77,7 @@ Item {
         height: 410
 
         value: vehicle.ignition
-               ? vehicle.rpm
+               ? vehicle.animatedRpm
                : 0
 
         maximum: 8000

@@ -183,12 +183,6 @@ Item {
 
         transformOrigin: Item.Center
 
-        Behavior on rotation {
-            NumberAnimation {
-                duration: 80
-                easing.type: Easing.OutQuad
-            }
-        }
 
         // Только верхняя половина стрелки.
         // Нижняя часть не закрывает цифровое значение.
