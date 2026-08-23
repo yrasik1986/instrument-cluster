@@ -3,6 +3,22 @@
 #include <QObject>
 #include <QCanBusDevice>
 
+/**
+ * @brief Приемник CAN-кадров
+ *
+ * Обеспечивает подключение к CAN-интерфейсу и прием кадров.
+ * Работает через Qt CAN Bus API (socketcan на Linux).
+ *
+ * Основные функции:
+ * - Подключение к CAN-интерфейсу (connectToInterface)
+ * - Отключение от интерфейса (disconnectFromInterface)
+ * - Прием CAN-кадров и их передача через сигнал frameReceived
+ * - Обработка ошибок соединения
+ *
+ * @note Использует QCanBusDevice для работы с CAN
+ * @note Поддерживается только socketcan (Linux)
+ */
+
 class CanReceiver : public QObject
 {
     Q_OBJECT

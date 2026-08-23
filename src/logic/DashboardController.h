@@ -8,6 +8,20 @@
 #include "../can/CanReceiver.h"
 #include "../model/VehicleModel.h"
 
+/**
+ * @brief Контроллер приборной панели
+ *
+ * Обеспечивает связь между CAN-шиной и моделью данных автомобиля.
+ * Принимает CAN-кадры, парсит их и обновляет модель.
+ * Контролирует таймаут соединения с CAN-шиной.
+ *
+ * Основные функции:
+ * - Прием CAN-кадров через CanReceiver
+ * - Парсинг данных через CanParser
+ * - Обновление VehicleModel
+ * - Мониторинг потери связи с CAN (таймаут 1 секунда)
+ */
+
 class DashboardController : public QObject
 {
     Q_OBJECT
