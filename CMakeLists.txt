@@ -30,6 +30,7 @@ qt_add_executable(InstrumentClusterApp
 
     src/can/CanParser.cpp
     src/can/CanParser.h
+    src/can/CanFrameId.h
 
     src/model/VehicleModel.cpp
     src/model/VehicleModel.h

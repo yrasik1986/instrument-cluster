@@ -1,4 +1,5 @@
 #include "CanParser.h"
+#include "CanFrameId.h"
 
 #include <QtGlobal>
 
@@ -10,13 +11,13 @@ bool CanParser::parse(const QCanBusFrame &frame, VehicleData &data)
 
     switch (id)
     {
-    case 0x100: return parse100(payload, data);
-    case 0x101: return parse101(payload, data);
+    case static_cast<std::uint32_t>(VehicleCan::FrameId::DriveData): return parseDriveData(payload, data);
+    case static_cast<std::uint32_t>(VehicleCan::FrameId::StatusData): return parseStatusData(payload, data);
     default: return false;
     }
 }
 
-bool CanParser::parse100( const QByteArray &payload, VehicleData &data)
+bool CanParser::parseDriveData( const QByteArray &payload, VehicleData &data)
 {
     if (payload.size() < 5)
     {
@@ -35,7 +36,7 @@ bool CanParser::parse100( const QByteArray &payload, VehicleData &data)
     return true;
 }
 
-bool CanParser::parse101(const QByteArray &payload, VehicleData &data)
+bool CanParser::parseStatusData(const QByteArray &payload, VehicleData &data)
 {
     if (payload.size() < 3)
     {

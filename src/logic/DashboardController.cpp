@@ -1,5 +1,7 @@
 #include "DashboardController.h"
 
+#include "../can/CanFrameId.h"
+
 #include <QDebug>
 
 DashboardController::DashboardController(CanReceiver *receiver, VehicleModel *model, QObject *parent)
@@ -32,13 +34,13 @@ void DashboardController::processFrame(const QCanBusFrame &frame)
 
     switch (frame.frameId())
     {
-    case 0x100:
+    case static_cast<std::uint32_t>(VehicleCan::FrameId::DriveData):
         m_lastCan100.restart();
         m_receivedCan100 = true;
         m_model->updateDriveData(data.speed, data.rpm,data.ignition);
         break;
 
-    case 0x101:
+    case static_cast<std::uint32_t>(VehicleCan::FrameId::StatusData):
         m_model->updateStatusData(data.coolantTemperature, data.fuel,data.leftTurn,data.rightTurn, data.highBeam, data.checkEngine );
         break;
 
