@@ -16,6 +16,7 @@ VehicleModel::VehicleModel(QObject *parent)
     m_animationTimer.setInterval(16); // ~60 Hz
     connect(&m_animationTimer, &QTimer::timeout, this, &VehicleModel::updateAnimation);
     m_animationTimer.start();
+    m_dtTimer.start();
 }
 
 bool VehicleModel::lowFuel() const
@@ -100,26 +101,31 @@ void VehicleModel::setCanLost()
 
 void VehicleModel::updateAnimation()
 {
+    // Считаем реальное время между вызовами
+    qint64 now = m_dtTimer.elapsed();
+    float dt = (now - m_lastUpdateTime) / 1000.0f;
+    m_lastUpdateTime = now;
+
+    if (dt > 0.1f) dt = 0.1f;  // защита от рывков
+
     bool changed = false;
 
-    // Плавное обновление скорости (экспоненциальное сглаживание)
-    const double speedDiff = m_targetSpeed - m_animatedSpeed;
-    if (std::abs(speedDiff) > 0.01) {
-        m_animatedSpeed += speedDiff * SPEED_SMOOTHING;
+    // Скорость
+    if (std::abs(m_targetSpeed - m_animatedSpeed) > 0.01) {
+        float alpha = 1.0f - exp(-dt / SPEED_TAU);
+        m_animatedSpeed += (m_targetSpeed - m_animatedSpeed) * alpha;
         changed = true;
-    } else if (m_animatedSpeed != m_targetSpeed) {
-        m_animatedSpeed = m_targetSpeed;  // доводим до точного значения
-        changed = true;
+    } else {
+        m_animatedSpeed = m_targetSpeed;
     }
 
-    // Плавное обновление оборотов
-    const double rpmDiff = m_targetRpm - m_animatedRpm;
-    if (std::abs(rpmDiff) > 0.5) {
-        m_animatedRpm += rpmDiff * RPM_SMOOTHING;
+    // Обороты
+    if (std::abs(m_targetRpm - m_animatedRpm) > 0.5) {
+        float alpha = 1.0f - exp(-dt / RPM_TAU);
+        m_animatedRpm += (m_targetRpm - m_animatedRpm) * alpha;
         changed = true;
-    } else if (m_animatedRpm != m_targetRpm) {
+    } else {
         m_animatedRpm = m_targetRpm;
-        changed = true;
     }
 
     if (changed) {
