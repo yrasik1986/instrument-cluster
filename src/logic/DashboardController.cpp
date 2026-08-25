@@ -35,15 +35,13 @@ void DashboardController::processFrame(const QCanBusFrame &frame)
     switch (frame.frameId())
     {
     case static_cast<std::uint32_t>(VehicleCan::FrameId::DriveData):
-        m_lastCan100.restart();
-        m_receivedCan100 = true;
         m_model->updateDriveData(data.speed, data.rpm,data.ignition);
+        restartLastCan();
         break;
-
     case static_cast<std::uint32_t>(VehicleCan::FrameId::StatusData):
         m_model->updateStatusData(data.coolantTemperature, data.fuel,data.leftTurn,data.rightTurn, data.highBeam, data.checkEngine );
+        restartLastCan();
         break;
-
     default:
         break;
     }
@@ -51,14 +49,14 @@ void DashboardController::processFrame(const QCanBusFrame &frame)
 
 void DashboardController::checkCanTimeout()
 {
-    if (!m_receivedCan100)
-    {
+    if (!m_receivedCan || m_lastCan.elapsed() > CAN_TIMEOUT_MS) {
         m_model->setCanLost();
-        return;
     }
+    m_receivedCan = false;
+}
 
-    if (m_lastCan100.elapsed() > CAN_TIMEOUT_MS)
-    {
-        m_model->setCanLost();
-    }
+void DashboardController::restartLastCan()
+{
+    m_lastCan.restart();
+    m_receivedCan = true;
 }

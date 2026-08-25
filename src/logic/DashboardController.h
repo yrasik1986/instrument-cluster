@@ -42,9 +42,11 @@ private:
     CanParser m_parser;
 
     QTimer m_timeoutTimer;
-    QElapsedTimer m_lastCan100;
+    QElapsedTimer m_lastCan;
 
-    bool m_receivedCan100 = false;
+    bool m_receivedCan = false;
 
     static constexpr qint64 CAN_TIMEOUT_MS = 1000;
+
+    void restartLastCan();
 };
