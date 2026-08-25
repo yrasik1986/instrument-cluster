@@ -19,20 +19,6 @@ public:
     explicit CanGenerator(QObject *parent = nullptr)
         : QObject(parent)
         , m_rng(std::random_device{}())
-        , m_scenarioStep(0)
-        , m_stepTimer(0)
-        , m_loopCounter(0)
-        , m_ignitionOn(false)
-        , m_highBeamOn(false)
-        , m_speed(0.0)
-        , m_rpm(0)
-        , m_fuel(50)
-        , m_coolant(30)
-        , m_leftTurn(false)
-        , m_rightTurn(false)
-        , m_highBeam(false)
-        , m_checkEngine(false)
-        , m_canLost(false)
     {
         QString errorString;
 
@@ -65,6 +51,7 @@ public:
 private slots:
     void sendData()
     {
+        m_frameCounter++;
         m_stepTimer++;
         const int frameMs = m_stepTimer * 20;
 
@@ -401,8 +388,11 @@ private slots:
 
         // Отправка CAN-кадров
         if (!m_canLost) {
-            send100(m_speed, m_rpm, m_ignitionOn);
-            send101(m_coolant, m_fuel, m_leftTurn, m_rightTurn, m_highBeam, m_checkEngine);
+            send100(m_speed, m_rpm, m_ignitionOn);  // 0x100 — 20 мс
+            if (m_frameCounter % 5 == 0) {          // 0x101 — 100 мс
+                send101(m_coolant, m_fuel, m_leftTurn, m_rightTurn,
+                        m_highBeam, m_checkEngine);
+            }
         }
     }
 
@@ -475,21 +465,22 @@ private:
     QTimer m_timer;
     std::mt19937 m_rng;
 
-    int m_scenarioStep;
-    int m_stepTimer;
-    int m_loopCounter;
+    int m_scenarioStep =0;
+    int m_stepTimer = 0;
+    int m_loopCounter = 0;
+    int m_frameCounter = 0;
 
-    bool m_ignitionOn;
-    bool m_highBeamOn;
-    double m_speed;
-    int m_rpm;
-    int m_fuel;
-    int m_coolant;
-    bool m_leftTurn;
-    bool m_rightTurn;
-    bool m_highBeam;
-    bool m_checkEngine;
-    bool m_canLost;
+    bool m_ignitionOn = false;
+    bool m_highBeamOn = false;
+    double m_speed = 0;
+    int m_rpm = 0;
+    int m_fuel = 50;
+    int m_coolant = 30;
+    bool m_leftTurn = false;
+    bool m_rightTurn = false;
+    bool m_highBeam = false;
+    bool m_checkEngine = false;
+    bool m_canLost = false;
 };
 
 #include "main.moc"
